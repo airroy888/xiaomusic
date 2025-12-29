@@ -1,0 +1,48 @@
+services:
+  # 1. 解锁/代理服务
+  unblock-netease:
+    container_name: unblock-netease
+    build: ./unblock-source # 使用本地源码构建，需提前下载，下载地址https://github.com/UnblockNeteaseMusic/server/archive/refs/tags/v0.28.0.zip，下载后解压并将文件夹改名为unblock-source存放在XiaoMusic目录中
+    # 保持配置：酷狗优先，严格模式，局域网IP
+    command: -o kugou bodian kuwo bilibili -s -e http://这里换成你的IP地址:4090
+    ports:
+      - "4090:8080"
+      - "4091:8081"
+    # DNS 必须保留，这是 -s 严格模式生效的基础
+    dns:
+      - 223.5.5.5
+      - 114.114.114.114
+    restart: unless-stopped
+
+  # 2. 网易云 API 服务
+  netease-api:
+    image: binaryify/netease_cloud_music_api:latest
+    container_name: netease-api
+    depends_on:
+      - unblock-netease
+    environment:
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      # 代理指向 Unblock 容器
+      - http_proxy=http://unblock-netease:8080
+      - HTTP_PROXY=http://unblock-netease:8080
+      - https_proxy=http://unblock-netease:8080
+      - HTTPS_PROXY=http://unblock-netease:8080
+    ports:
+      - "4092:3000"
+    restart: unless-stopped
+
+  # 3. 小爱音箱服务
+  xiaomusic:
+    image: hanxi/xiaomusic:latest
+    container_name: XiaoMusic
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    volumes:
+      - 改为你的存储位置/XiaoMusic/music/download:/app/music/download
+      - 改为你的存储位置/XiaoMusic/conf:/app/conf
+      - 改为你的存储位置/XiaoMusic/plugins:/app/plugins
+    environment:
+      - XIAOMUSIC_HOSTNAME=这里换成你的IP地址
+    depends_on:
+      - netease-api
