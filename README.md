@@ -1,3 +1,34 @@
+本项目完全Fork了xiaomusic项目，并结合xiaomusic同步网易云歌单及解锁灰色音乐，实现网易云歌单及歌曲的播放。
+项目特点：
+1、网易云歌单实现秒同步。同步歌曲时仅将歌名保存在播放列表中，无需等待播放链接更新。
+2、当播放歌单时，系统会实时更新查询播放链接，并调用xiaomusic的API下载播放。
+3、歌单播放采取播1备1方式随时待命状态，当用户喊“切歌”可以实现快速播放歌单的下一首歌曲。
+
+使用方法：
+1、下载docker-compose文件：
+    下载项目目录下的docker-compose.yml文件，编辑文件将2处的“这里换成你的IP地址”更换成自己IP地址。
+    修改xiaomusic的持久化目录：
+    volumes:
+      - 改为你的存储位置/XiaoMusic/music/download:/app/music/download
+      - 改为你的存储位置/XiaoMusic/conf:/app/conf
+      - 改为你的存储位置/XiaoMusic/plugins:/app/plugins
+2、下载plugins目录下的三个文件：
+    网易云歌单同步——load_target_playlist.py
+    播放歌单——play_target_list.py
+    搜索播放——search_play_song.py
+    将这3个文件存放在：改为你的存储位置/XiaoMusic/plugins目录下
+3、下载解锁灰色音乐压缩包：
+    下载地址https://github.com/UnblockNeteaseMusic/server/archive/refs/tags/v0.28.0.zip
+    下载后解压出文件夹，并将文件夹命名为unblock-source，将该文件夹存放在：改为你的存储位置/XiaoMusic目录下
+4、修改setting.json文件：
+    下载项目目录下的setting.json，将该文件中的内容合并到你的xiaomusic的setting.json文件中，将修改后的setting.json文件存放在：改为你的存储位置/XiaoMusic/conf
+5、使用dockercompose启动。启动先喊“更新歌单”、再喊“播放歌单”即可使用，播放歌单时喊“切歌”可以播放下一首。此外喊“播放xxx”或“播放歌曲xxx”可以播放对应的音乐（首次运行需要先喊一次之后才生效）。
+
+说明：
+1、本项目所使用的解锁网易云灰色音乐及网易云API服务，均来源于网络。所使用的灰色音乐解锁项目，本质上并非破解网易云VIP歌曲，而是通过第三方渠道获得非网易云VIP才能播放的同名歌曲链接，即灰色音乐所解锁的歌曲并非来自网易云音乐库。
+2、该项目仅共测试学习使用，若追求极致音乐体验可自行开通网易云音乐VIP会员。
+
+
 # XiaoMusic: 无限听歌，解放小爱音箱
 
 [![GitHub License](https://img.shields.io/github/license/hanxi/xiaomusic)](https://github.com/hanxi/xiaomusic)
